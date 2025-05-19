@@ -78,4 +78,11 @@ def saada_email(saaja, nimi, kuupaev, ruut, iseloom):
     email.attach(MIMEText(sisu, 'plain'))
 
     try:
-        with 
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
+            server.login(saatja, salasyna)
+            server.send_message(email)
+        return True
+    except Exception as e:
+    print("Saatmise viga:", e)
+    return False
