@@ -1,5 +1,6 @@
-﻿import email
 import tkinter as tk
+import email
+import encodings
 from tkinter import messagebox
 from datetime import datetime
 import smtplib
@@ -7,7 +8,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 # Iga numbri omadused
-omadused = {
+iseloomustused = {
  '1': 'Tahtejõud ja enesekindlus.',
  '2': 'Energia ja tundlikkus.',
  '3': 'Loovus ja eneseväljendusoskus.',
@@ -84,5 +85,69 @@ def saada_email(saaja, nimi, kuupaev, ruut, iseloom):
             server.send_message(email)
         return True
     except Exception as e:
-    print("Saatmise viga:", e)
-    return False
+        print("Saatmise viga:", e)
+        return False
+
+
+# Salvestab andmed faili
+def salvesta_faili(nimi, kuupaev, numbrid):
+    with open("pythagorase_andmed.txt", "a", encoding="utf-8") as fail:
+        fail.write(f"Nimi: {nimi}; Sünnipäev: {kuupaev}; Numbrid: {numbrid}\n")
+
+
+#Põhiliides GUI
+def kaivita_rakendus():
+    def arvuta():
+        nimi = sisend_nimi.get()
+        kuupaev = sisend_kuupaev.get()
+        email = sisend_email.get()
+
+        try:
+            datetime.strptime(kuupaev, "%d.%m.%Y")
+        except:
+            messagebox.showerror("Viga", "Kuupäev peab olema kujul PP.KK.AAAA")
+            return
+
+        numbrid = arvuta_tooarvud(kuupaev)
+        kordused = loenda_numbrid(numbrid)
+        ruut = loo_ruut(kordused)
+
+        tekstilahter.delete('1.0', tk.END)
+        for rida in ruut:
+            tekstilahter.insert(tk.END, ' | '.join(rida) + '\n')
+            
+        iseloomustus = {nr: iseloomustused[nr] for nr in kordused if kordused[nr] > 0}
+        for nr, kirjeldus in iseloomustus.items():
+            tekstilahter.insert(tk.END, f"{nr}: {kirjeldus}\n")
+
+        salvesta_faili(nimi, kuupaev, numbrid)
+
+        if saada_email(nimi, kuupaev, numbrid, ruut, iseloom):
+            messagebox.showinfo("Edukalt saadetud", "Tulemused saadeti e-mailile.")
+        else:
+            messagebox.showerror("Saatmine viga", "E-maili saatmine ebaõnnestus.")
+    aken = tk.Tk()
+    aken.title("Pythagorase ruut")
+
+    tk.Label(aken, text="Nimi:").grid(row=0, column=0)
+    sisend_nimi = tk.Entry(aken)
+    sisend_nimi.grid(row=0, column=1)
+
+    tk.Label(aken, text="Sünnikuupäev (PP.KK.AAAA):").grid(row=1, column=0)
+    sisend_kuupaev = tk.Entry(aken)
+    sisend_kuupaev.grid(row=1, column=1)
+
+    tk.Label(aken, text="E-mail:").grid(row=2, column=0)
+    sisend_email = tk.Entry(aken)
+    sisend_email.grid(row=2, column=1)
+
+    tk.Button(aken, text="Arvuta", command=arvuta).grid(row=3, columnspan=2)
+
+    tekstilahter = tk.Text(aken, width=50, height=15)
+    tekstilahter.grid(row=4, columnspan=2)
+
+    aken.mainloop()
+
+
+if __name__=="__main__":
+    kaivita_rakendus()
