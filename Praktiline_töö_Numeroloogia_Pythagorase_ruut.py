@@ -61,7 +61,7 @@ def loo_ruut(loendur):
 # Tulemuse saatmine e-posti teel
 def saada_email(saaja, nimi, kuupaev, ruut, iseloom):
     saatja = 'nikitosgoldboss@gmail.com'
-    salasyna = 'sinu_parool'
+    salasyna = 'pzvd agdo saxi ywtz'
 
 
     sisu = f"Tere, {nimi}!\n\nSünnikuupäev: {kuupaev}\n\nPythagorase ruut:\n"
@@ -122,7 +122,7 @@ def kaivita_rakendus():
 
         salvesta_faili(nimi, kuupaev, numbrid)
 
-        if saada_email(nimi, kuupaev, numbrid, ruut, iseloom):
+        if saada_email(email, nimi, kuupaev, ruut, iseloomustus):
             messagebox.showinfo("Edukalt saadetud", "Tulemused saadeti e-mailile.")
         else:
             messagebox.showerror("Saatmine viga", "E-maili saatmine ebaõnnestus.")
